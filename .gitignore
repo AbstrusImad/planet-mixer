@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.vite/
+.env
+.env.local
+*.log
+__pycache__/
+.pytest_cache/
+artifacts/
+assets/_*.js
+assets/_*.log
+assets/planets/
+videos/
+.DS_Store
