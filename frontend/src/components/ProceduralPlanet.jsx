@@ -127,7 +127,7 @@ export default function ProceduralPlanet({ colorA, colorB, size = 160, seed = 1 
   return (
     <canvas
       ref={canvasRef}
-      style={{ width: size, height: size, display: 'block' }}
+      style={{ width: '100%', height: '100%', display: 'block' }}
       aria-hidden="true"
     />
   );

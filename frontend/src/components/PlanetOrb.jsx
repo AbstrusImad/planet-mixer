@@ -21,11 +21,12 @@ export default function PlanetOrb({ planet, size = 120 }) {
     <div
       className="orb"
       style={{
-        width: size,
-        height: size,
+        width: '100%',
+        maxWidth: size,
+        aspectRatio: '1 / 1',
         flex: '0 0 auto',
         alignSelf: 'center',
-        boxShadow: `0 0 ${size * 0.28}px ${rarity.glow}, 0 0 ${size * 0.12}px ${rarity.glow}`,
+        boxShadow: `0 0 ${size * 0.3}px ${rarity.glow}, 0 0 ${size * 0.13}px ${rarity.glow}`,
       }}
     >
       {showImage ? (
