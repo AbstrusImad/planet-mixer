@@ -318,6 +318,36 @@ const ABILITY_BANK = [
   'Lumen Wake',
 ];
 
+const ELEMENT_ADJ = {
+  Ocean: 'Tidal',
+  Fire: 'Molten',
+  Ice: 'Frozen',
+  Metal: 'Iron',
+  Nature: 'Verdant',
+  Shadow: 'Umbral',
+  Light: 'Radiant',
+  Storm: 'Tempest',
+};
+
+const ELEMENT_NOUN = {
+  Ocean: 'Reef',
+  Fire: 'Forge',
+  Ice: 'Veil',
+  Metal: 'Core',
+  Nature: 'Grove',
+  Shadow: 'Eclipse',
+  Light: 'Dawn',
+  Storm: 'Surge',
+};
+
+function hybridName(elementA, elementB, seed) {
+  const adj = ELEMENT_ADJ[elementA];
+  const noun = ELEMENT_NOUN[elementB];
+  if (adj && noun) return `${adj} ${noun} Planet`;
+  // deeper fusions of already-hybrid worlds: keep a clean two-word blend
+  return `${blendName(elementA, elementB)} Planet`;
+}
+
 // Rarity weighting: more contrasting and higher-tier parents skew rarer.
 function deriveRarity(a, b, seed) {
   const ra = RARITIES[a.rarity]?.rank ?? 0;
@@ -339,7 +369,7 @@ export function generateHybridPlanet(a, b) {
   const elementB = b.element;
   const seed = hashString(comboKey(elementA, elementB));
   const rarity = deriveRarity(a, b, seed);
-  const name = `${blendName(elementA, elementB)} Planet`;
+  const name = hybridName(elementA, elementB, seed);
   const colorA = blendColors(a.colorA, b.colorA, 0.4);
   const colorB = blendColors(a.colorB, b.colorB, 0.6);
   const ability = ABILITY_BANK[seed % ABILITY_BANK.length];

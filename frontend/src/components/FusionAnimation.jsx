@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { RARITIES } from '../data/planets.js';
+import { RARITIES, planetImageUrl } from '../data/planets.js';
 
 // Full screen fusion moment: two parent orbs fly toward the center, a particle
 // burst and flash fire on impact, then onDone reveals the result card.
@@ -32,6 +32,18 @@ export default function FusionAnimation({ parentA, parentB, result, onDone }) {
     const rarity = RARITIES[result?.rarity] ?? RARITIES.Common;
     const cx = w / 2;
     const cy = h / 2;
+
+    // Preload the real planet art so the parents and result show their actual
+    // images during the animation, not plain colored spheres.
+    const loadImg = (p) => {
+      if (!p?.image) return null;
+      const im = new Image();
+      im.src = planetImageUrl(p.image);
+      return im;
+    };
+    const imgA = loadImg(parentA);
+    const imgB = loadImg(parentB);
+    const imgR = loadImg(result);
 
     const colors = [parentA.colorA, parentA.colorB, parentB.colorA, parentB.colorB, rarity.color];
     const burst = [];
@@ -72,6 +84,23 @@ export default function FusionAnimation({ parentA, parentB, result, onDone }) {
       ctx.fill();
     };
 
+    // Draw a planet: a soft glow, then the real transparent PNG when loaded,
+    // otherwise the colored-sphere fallback.
+    const drawPlanet = (img, ca, cb, x, y, r) => {
+      const glow = ctx.createRadialGradient(x, y, r * 0.5, x, y, r * 1.5);
+      glow.addColorStop(0, `${rarity.glow}`);
+      glow.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = glow;
+      ctx.beginPath();
+      ctx.arc(x, y, r * 1.5, 0, Math.PI * 2);
+      ctx.fill();
+      if (img && img.complete && img.naturalWidth) {
+        ctx.drawImage(img, x - r, y - r, r * 2, r * 2);
+      } else {
+        drawOrb(x, y, r, ca, cb);
+      }
+    };
+
     const frame = (now) => {
       const t = Math.min(1, (now - start) / DURATION);
       ctx.clearRect(0, 0, w, h);
@@ -87,8 +116,8 @@ export default function FusionAnimation({ parentA, parentB, result, onDone }) {
         const r = 64 * (1 - p * 0.25);
         ctx.save();
         ctx.globalAlpha = 0.95;
-        drawOrb(ax + Math.cos(spin) * 6, cy, r, parentA.colorA, parentA.colorB);
-        drawOrb(bx - Math.cos(spin) * 6, cy, r, parentB.colorA, parentB.colorB);
+        drawPlanet(imgA, parentA.colorA, parentA.colorB, ax + Math.cos(spin) * 6, cy, r);
+        drawPlanet(imgB, parentB.colorA, parentB.colorB, bx - Math.cos(spin) * 6, cy, r);
         ctx.restore();
       } else {
         if (!flashed) {
@@ -109,7 +138,7 @@ export default function FusionAnimation({ parentA, parentB, result, onDone }) {
         // emerging result core
         const r = 70 + ft * 30;
         ctx.globalAlpha = Math.min(1, ft * 1.5);
-        drawOrb(cx, cy, r, result.colorA, result.colorB);
+        drawPlanet(imgR, result.colorA, result.colorB, cx, cy, r);
         ctx.globalAlpha = 1;
       }
 
