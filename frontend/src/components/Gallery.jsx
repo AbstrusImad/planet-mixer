@@ -23,10 +23,16 @@ export default function Gallery({ collection, onSelect, selectedId }) {
   return (
     <section className="gallery" id="gallery">
       <div className="gallery__head">
-        <h2 className="section-title">Galaxy Collection</h2>
-        <p className="gallery__count">
-          <strong>{collection.length}</strong> world{collection.length === 1 ? '' : 's'} discovered
-        </p>
+        <div>
+          <span className="gallery__eyebrow">Archive</span>
+          <h2 className="section-title">Galaxy Collection</h2>
+        </div>
+        <div className="gallery__counter">
+          <span className="gallery__counter-num">{collection.length}</span>
+          <span className="gallery__counter-label">
+            world{collection.length === 1 ? '' : 's'} discovered
+          </span>
+        </div>
       </div>
 
       <div className="filters" role="tablist" aria-label="Rarity filter">
@@ -64,7 +70,7 @@ export default function Gallery({ collection, onSelect, selectedId }) {
                 type="button"
                 className={`gallery__cell ${selectedId === p.id ? 'gallery__cell--active' : ''}`}
                 onClick={() => onSelect(p)}
-                style={{ borderColor: rarity.color }}
+                style={{ '--rarity': rarity.color, '--rarity-glow': rarity.glow }}
               >
                 <PlanetOrb planet={p} size={92} />
                 <span className="gallery__cell-name">{p.name}</span>

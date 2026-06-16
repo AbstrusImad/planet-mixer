@@ -9,8 +9,12 @@ function seedFrom(id) {
   return h % 97;
 }
 
-// Round planet with a soft rarity glow. Uses the bundled image when present,
-// otherwise the procedural canvas fallback. Looks complete either way.
+// Perfectly circular planet with a soft rarity glow. Bulletproof shape:
+// the wrapper takes a width only (capped by the size prop) and never a fixed
+// height. The square 512x512 source defines the box height through its own
+// aspect-ratio (see .orb img / .orb canvas in index.css), so no flex or grid
+// parent can ever stretch it into an ellipse. Uses the bundled image when
+// present, otherwise the procedural canvas fallback. Looks complete either way.
 export default function PlanetOrb({ planet, size = 120 }) {
   const [broken, setBroken] = useState(false);
   const rarity = RARITIES[planet.rarity] ?? RARITIES.Common;
@@ -23,9 +27,6 @@ export default function PlanetOrb({ planet, size = 120 }) {
       style={{
         width: '100%',
         maxWidth: size,
-        aspectRatio: '1 / 1',
-        flex: '0 0 auto',
-        alignSelf: 'center',
         boxShadow: `0 0 ${size * 0.3}px ${rarity.glow}, 0 0 ${size * 0.13}px ${rarity.glow}`,
       }}
     >

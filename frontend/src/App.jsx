@@ -81,6 +81,7 @@ export default function App() {
           <MixerStage planets={trayPlanets} onFuse={handleFuse} busy={!!fusing} />
 
           <aside className="detail">
+            <span className="detail__eyebrow">Analysis</span>
             <h2 className="section-title">World Detail</h2>
             {selected ? (
               <PlanetCard planet={selected} />

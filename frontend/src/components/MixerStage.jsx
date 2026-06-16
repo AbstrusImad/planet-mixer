@@ -3,8 +3,8 @@ import { RARITIES } from '../data/planets.js';
 import PlanetOrb from './PlanetOrb.jsx';
 
 // Core interaction. Two ways to fuse, both fully functional:
-//  1. Drag a planet from the tray onto a slot, or directly onto another planet.
-//  2. Tap/click a planet to fill slot A then slot B, then press Mix Planets.
+//  1. Drag a planet from the tray onto a socket, or directly onto another planet.
+//  2. Tap/click a planet to fill socket A then socket B, then press Fuse.
 // Drag uses HTML5 DnD for pointer devices; tap-to-select covers touch.
 export default function MixerStage({ planets, onFuse, busy }) {
   const [slotA, setSlotA] = useState(null);
@@ -66,17 +66,21 @@ export default function MixerStage({ planets, onFuse, busy }) {
     if (source) tryFuse(source, target);
   };
 
-  const canMix = slotA && slotB && slotA.id !== slotB.id && !busy;
+  const bothFilled = !!(slotA && slotB && slotA.id !== slotB.id);
+  const canMix = bothFilled && !busy;
 
   return (
-    <section className="mixer" id="mixer">
-      <h2 className="section-title">Fusion Lab</h2>
-      <p className="mixer__hint">
-        Drag a world onto another to fuse, or tap two worlds and press Mix Planets.
-      </p>
+    <section className="lab" id="mixer">
+      <div className="lab__head">
+        <span className="lab__eyebrow">Fusion Lab</span>
+        <h2 className="section-title">Reactor Core</h2>
+        <p className="lab__hint">
+          Drag a world onto another to fuse, or tap two worlds and ignite the reactor.
+        </p>
+      </div>
 
-      <div className="mixer__slots">
-        <Slot
+      <div className={`reactor ${bothFilled ? 'reactor--charged' : ''}`}>
+        <Socket
           label="World A"
           planet={slotA}
           over={overSlot === 'A'}
@@ -89,11 +93,16 @@ export default function MixerStage({ planets, onFuse, busy }) {
           onDrop={(e) => onDropToSlot('A', e)}
         />
 
-        <div className="mixer__plus" aria-hidden="true">
-          +
+        <div className={`conduit ${bothFilled ? 'conduit--charged' : ''}`} aria-hidden="true">
+          <span className="conduit__line" />
+          <span className="conduit__core">
+            <span className="conduit__ring" />
+            <span className="conduit__spark" />
+          </span>
+          <span className="conduit__line" />
         </div>
 
-        <Slot
+        <Socket
           label="World B"
           planet={slotB}
           over={overSlot === 'B'}
@@ -107,68 +116,81 @@ export default function MixerStage({ planets, onFuse, busy }) {
         />
       </div>
 
-      <div className="mixer__action">
+      <div className="lab__action">
         <button
           type="button"
-          className="btn btn--primary"
+          className={`fuse-btn ${canMix ? 'fuse-btn--ready' : ''}`}
           disabled={!canMix}
           onClick={() => tryFuse(slotA, slotB)}
         >
-          {busy ? 'Fusing...' : 'Mix Planets'}
+          <span className="fuse-btn__glow" aria-hidden="true" />
+          <span className="fuse-btn__label">{busy ? 'Fusing...' : 'Fuse Worlds'}</span>
         </button>
       </div>
 
-      <div className="tray" aria-label="Available worlds">
-        {planets.map((p) => {
-          const rarity = RARITIES[p.rarity] ?? RARITIES.Common;
-          const selected = slotA?.id === p.id || slotB?.id === p.id;
-          return (
-            <button
-              key={p.id}
-              type="button"
-              className={`tray__item ${selected ? 'tray__item--selected' : ''} ${
-                dragId === p.id ? 'tray__item--dragging' : ''
-              }`}
-              draggable={!busy}
-              onDragStart={(e) => {
-                e.dataTransfer.setData('text/plain', p.id);
-                e.dataTransfer.effectAllowed = 'move';
-                setDragId(p.id);
-              }}
-              onDragEnd={() => setDragId(null)}
-              onDragOver={(e) => e.preventDefault()}
-              onDrop={(e) => onDropToPlanet(p, e)}
-              onClick={() => place(p)}
-              title={`${p.name} (${p.rarity})`}
-              style={{ borderColor: rarity.color }}
-            >
-              <PlanetOrb planet={p} size={76} />
-              <span className="tray__name">{p.name}</span>
-            </button>
-          );
-        })}
+      <div className="tray-block">
+        <div className="tray-block__head">
+          <span className="tray-block__title">Planet Tray</span>
+          <span className="tray-block__count">{planets.length} worlds</span>
+        </div>
+        <div className="tray" aria-label="Available worlds">
+          {planets.map((p) => {
+            const rarity = RARITIES[p.rarity] ?? RARITIES.Common;
+            const selected = slotA?.id === p.id || slotB?.id === p.id;
+            return (
+              <button
+                key={p.id}
+                type="button"
+                className={`tray__item ${selected ? 'tray__item--selected' : ''} ${
+                  dragId === p.id ? 'tray__item--dragging' : ''
+                }`}
+                draggable={!busy}
+                onDragStart={(e) => {
+                  e.dataTransfer.setData('text/plain', p.id);
+                  e.dataTransfer.effectAllowed = 'move';
+                  setDragId(p.id);
+                }}
+                onDragEnd={() => setDragId(null)}
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={(e) => onDropToPlanet(p, e)}
+                onClick={() => place(p)}
+                title={`${p.name} (${p.rarity})`}
+                style={{ '--rarity': rarity.color, '--rarity-glow': rarity.glow }}
+              >
+                <span className="tray__rarity" style={{ color: rarity.color }}>
+                  {p.rarity}
+                </span>
+                <PlanetOrb planet={p} size={84} />
+                <span className="tray__name">{p.name}</span>
+              </button>
+            );
+          })}
+        </div>
       </div>
     </section>
   );
 }
 
-function Slot({ label, planet, over, onClear, onDragOver, onDragLeave, onDrop }) {
+function Socket({ label, planet, over, onClear, onDragOver, onDragLeave, onDrop }) {
   return (
-    <div
-      className={`slot ${over ? 'slot--over' : ''} ${planet ? 'slot--filled' : ''}`}
-      onDragOver={onDragOver}
-      onDragLeave={onDragLeave}
-      onDrop={onDrop}
-    >
-      <span className="slot__label">{label}</span>
-      {planet ? (
-        <button type="button" className="slot__planet" onClick={onClear} title="Remove">
-          <PlanetOrb planet={planet} size={110} />
-          <span className="slot__name">{planet.name}</span>
-        </button>
-      ) : (
-        <div className="slot__empty">Drop a world</div>
-      )}
+    <div className={`socket ${over ? 'socket--over' : ''} ${planet ? 'socket--filled' : 'socket--empty'}`}>
+      <div
+        className="socket__ring"
+        onDragOver={onDragOver}
+        onDragLeave={onDragLeave}
+        onDrop={onDrop}
+      >
+        <span className="socket__halo" aria-hidden="true" />
+        {planet ? (
+          <button type="button" className="socket__planet" onClick={onClear} title="Remove world">
+            <PlanetOrb planet={planet} size={148} />
+          </button>
+        ) : (
+          <span className="socket__placeholder">Drop a world</span>
+        )}
+      </div>
+      <span className="socket__label">{label}</span>
+      <span className="socket__name">{planet ? planet.name : 'Empty'}</span>
     </div>
   );
 }
