@@ -683,22 +683,22 @@ a {
   position: relative;
   width: 100%;
   border-radius: 50%;
-  overflow: hidden;
-  background: #06061a;
+  overflow: visible;
+  background: transparent;
   flex: 0 0 auto;
   align-self: center;
 }
 
-/* the square 512x512 source defines the box height via aspect-ratio,
-   so the orb is always a true circle regardless of any flex/grid parent. */
+/* the square source defines the box height via aspect-ratio, so the orb is
+   always a true circle regardless of any flex/grid parent. Planet art is
+   transparent PNG, so it floats with its glow, no dark disc behind. */
 .orb img,
 .orb canvas {
   display: block;
   width: 100%;
   height: auto;
   aspect-ratio: 1 / 1;
-  object-fit: cover;
-  border-radius: 50%;
+  object-fit: contain;
 }
 
 @keyframes orbFloat {

@@ -389,5 +389,5 @@ export function resolveFusion(a, b) {
 
 export function planetImageUrl(image) {
   if (!image) return null;
-  return `${import.meta.env.BASE_URL}planets/${image}.jpg`;
+  return `${import.meta.env.BASE_URL}planets/${image}.png`;
 }
