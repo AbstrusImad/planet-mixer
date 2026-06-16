@@ -25,7 +25,6 @@ body {
   color: var(--text);
   font-family: var(--font);
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
 }
 
 body {
@@ -379,7 +378,8 @@ a {
   place-items: center;
   background: #06061a;
   aspect-ratio: 1 / 1;
-  flex-shrink: 0;
+  flex: 0 0 auto;
+  align-self: center;
 }
 
 .orb img {

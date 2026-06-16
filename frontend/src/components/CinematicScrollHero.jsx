@@ -275,7 +275,7 @@ export default function CinematicScrollHero({ onEnter }) {
     <>
       <ScrubStage
         cfg={CINEMATIC.hero}
-        heightVh={320}
+        heightVh={240}
         copies={[
           { kicker: 'A galaxy fusion game', title: 'PLANET MIXER', sub: 'Fuse worlds. Discover galaxies.', cta: onEnter, hint: 'Scroll to fly in' },
           { title: 'Eight elemental worlds', small: true, sub: 'Ocean, fire, ice, metal, nature, shadow, light and storm await your hand.' },
@@ -283,7 +283,7 @@ export default function CinematicScrollHero({ onEnter }) {
       />
       <ScrubStage
         cfg={CINEMATIC.fusion}
-        heightVh={300}
+        heightVh={220}
         copies={[
           { title: 'Drag a world onto another', small: true, sub: 'Two worlds collide and a hybrid is born: a new name, rarity, ability and lore.' },
           { title: 'Build your galaxy', small: true, sub: 'Chase Mythic worlds and register your rarest finds on GenLayer.', cta: onEnter, ctaLabel: 'Enter the galaxy' },

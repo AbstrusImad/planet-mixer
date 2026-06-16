@@ -22,8 +22,9 @@ export default function PlanetOrb({ planet, size = 120 }) {
       className="orb"
       style={{
         width: size,
-        aspectRatio: '1 / 1',
-        flexShrink: 0,
+        height: size,
+        flex: '0 0 auto',
+        alignSelf: 'center',
         boxShadow: `0 0 ${size * 0.28}px ${rarity.glow}, 0 0 ${size * 0.12}px ${rarity.glow}`,
       }}
     >
